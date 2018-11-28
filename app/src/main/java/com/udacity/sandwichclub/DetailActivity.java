@@ -2,13 +2,20 @@ package com.udacity.sandwichclub;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.TextViewCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.sandwichclub.model.Sandwich;
 import com.udacity.sandwichclub.utils.JsonUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -34,21 +41,28 @@ public class DetailActivity extends AppCompatActivity {
             return;
         }
 
-        String[] sandwiches = getResources().getStringArray(R.array.sandwich_details);
-        String json = sandwiches[position];
-        Sandwich sandwich = JsonUtils.parseSandwichJson(json);
-        if (sandwich == null) {
-            // Sandwich data unavailable
-            closeOnError();
-            return;
-        }
+            try {
+                String[] sandwiches = getResources().getStringArray(R.array.sandwich_details);
+                String json = sandwiches[position];
 
-        populateUI();
-        Picasso.with(this)
-                .load(sandwich.getImage())
-                .into(ingredientsIv);
+                Sandwich sandwich = JsonUtils.parseSandwichJson(json);
+                if (sandwich == null) {
+                    // Sandwich data unavailable
+                    closeOnError();
+                    return;
+                }
 
-        setTitle(sandwich.getMainName());
+                populateUI(sandwich);
+                Picasso.with(this)
+                        .load(sandwich.getImage())
+                        .into(ingredientsIv);
+
+                setTitle(sandwich.getMainName());
+            }
+            catch (JSONException e){
+            e.printStackTrace();
+            }
+
     }
 
     private void closeOnError() {
@@ -56,7 +70,21 @@ public class DetailActivity extends AppCompatActivity {
         Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show();
     }
 
-    private void populateUI() {
+    private void populateUI(Sandwich sandwich) {
+        TextView description = (TextView) findViewById(R.id.description_tv);
+        description.setText(sandwich.getDescription());
 
+        TextView placeOfOrigin = (TextView) findViewById(R.id.origin_tv);
+        placeOfOrigin.setText(sandwich.getPlaceOfOrigin());
+
+        TextView ingredients = (TextView) findViewById(R.id.ingredients_tv);
+        ingredients.setText(sandwich.getIngredients().toString()
+                .replace("[","")
+                .replace("]",""));
+
+        TextView aka = (TextView) findViewById(R.id.also_known_tv);
+        aka.setText(sandwich.getAlsoKnownAs().toString()
+                .replace("[","")
+                .replace("]",""));
     }
 }
