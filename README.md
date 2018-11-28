@@ -1,3 +1,5 @@
+--PROJECT COMPLETED AND SUBMITTED 11-26-2018 -- see latest commit on master branch
+
 # Sandwich Club Project Starter Code
 
 ## Project Overview
